@@ -1,0 +1,49 @@
+#!/bin/bash
+
+tmp=$1
+file=${tmp%.*}
+TEMPLATEDIR=$(dirname $(type -p $0 | grep -oE '[^ ]+$' | head -1))
+
+relpath(){ python -c "import os.path; print os.path.relpath('$1','${2:-$PWD}')" ; }
+TEMPLATE_DIR=$(relpath $TEMPLATEDIR)
+
+usage() {
+cat << EOF
+USAGE:
+
+   notes input [output_type] [output_file]
+
+EXAMPLES:
+
+notes file.md
+        compiles file.md to HTML (default)
+
+notes file.md pdf
+    compiles file.md to Custom PDF
+
+notes file.md css
+    compiles file.md to PDF with custom CSS
+EOF
+}
+
+if [ ! -z $1 ]; then
+    if [ -z $2 ]; then
+        pandoc -s $1 -o $file.html
+    else
+        if [ $2 == "pdf" ]; then
+            pandoc -N --template=$TEMPLATEDIR/notes.tex --variable mainfont="Palatino" --variable sansfont="Century Gothic" \
+            --variable monofont="Inconsolata" \
+            --variable fontsize=12pt \
+            $1 \
+            --latex-engine=xelatex --toc -o $file.pdf
+        elif [ $2 == "css" ]; then
+            pandoc -s -S -c $TEMPLATE_DIR/notes.css $1 -o $file.html
+        else
+            usage
+            exit 1
+        fi
+    fi
+else
+    usage
+    exit 1
+fi
