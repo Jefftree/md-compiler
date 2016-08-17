@@ -31,13 +31,14 @@ if [ ! -z $1 ]; then
         pandoc -s $1 -o $file.html
     else
         if [ $2 == "pdf" ]; then
+            echo "Compiling PDF"
             pandoc -N --template=$TEMPLATEDIR/notes.tex --variable mainfont="Palatino" --variable sansfont="Century Gothic" \
             --variable monofont="Inconsolata" \
             --variable fontsize=12pt \
             $1 \
             --latex-engine=xelatex --toc -o $file.pdf
         elif [ $2 == "css" ]; then
-            pandoc -s -S -c $TEMPLATE_DIR/notes.css $1 -o $file.html
+            pandoc -s -S --mathjax -c $TEMPLATE_DIR/notes.css $1 -o $file.html
         else
             usage
             exit 1
