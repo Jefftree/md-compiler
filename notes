@@ -4,7 +4,7 @@ tmp=$1
 file=${tmp%.*}
 TEMPLATEDIR=$(dirname $(type -p $0 | grep -oE '[^ ]+$' | head -1))
 
-relpath(){ python2 -c "import os.path; print os.path.relpath('$1','$(readlink -f ${2:-$PWD})')" ; }
+relpath(){ python2 -c "import os.path; print os.path.relpath('$1','${2:-$PWD}')" ; }
 TEMPLATE_DIR=$(relpath $TEMPLATEDIR)
 
 usage() {
